@@ -1,3 +1,10 @@
 spring:
   application:
     name: movies-api
+  datasource:
+    url: jdbc:sqlite:movies.db
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
