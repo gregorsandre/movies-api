@@ -1,0 +1,12 @@
+# Test configuration: in-memory H2 instead of the SQLite file,
+# so tests never touch movies.db
+spring:
+  application:
+    name: movies-api
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: true

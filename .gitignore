@@ -35,3 +35,20 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### SQLite database ###
+movies.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+### Logs ###
+*.log
+logs/
+
+### OS files ###
+.DS_Store
+Thumbs.db
+
+### Local environment / secrets ###
+.env

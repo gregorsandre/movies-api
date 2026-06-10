@@ -1,0 +1,476 @@
+{
+  "info": {
+    "name": "Movie Database API",
+    "description": "CRUD, filtering, search, pagination and error-scenario requests for the Movie Database API. Start the application with `./gradlew bootRun` before sending requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Genres",
+      "item": [
+        {
+          "name": "Create genre",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Film Noir\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/genres",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "genres"]
+            },
+            "description": "Expects 201 Created with the created genre."
+          }
+        },
+        {
+          "name": "Get all genres (paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/genres?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "genres"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            },
+            "description": "Expects 200 OK with a Page of genres."
+          }
+        },
+        {
+          "name": "Get genre by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/genres/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "genres", "1"]
+            },
+            "description": "Expects 200 OK."
+          }
+        },
+        {
+          "name": "Update genre name (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Action & Adventure\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/genres/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "genres", "1"]
+            },
+            "description": "Expects 200 OK with the updated genre."
+          }
+        },
+        {
+          "name": "Get movies in genre",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/genres/1/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "genres", "1", "movies"]
+            },
+            "description": "Expects 200 OK with a Page of movies belonging to the genre."
+          }
+        },
+        {
+          "name": "Delete genre (blocked by relationships)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/genres/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "genres", "1"]
+            },
+            "description": "Expects 400 Bad Request with a message like \"Cannot delete genre 'Action' because it has N associated movies\"."
+          }
+        },
+        {
+          "name": "Force delete genre",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/genres/1?force=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "genres", "1"],
+              "query": [{ "key": "force", "value": "true" }]
+            },
+            "description": "Expects 204 No Content. Removes the genre from all movies, then deletes it."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Movies",
+      "item": [
+        {
+          "name": "Create movie (with genres and actors)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Inception\",\n  \"releaseYear\": 2010,\n  \"duration\": 148,\n  \"genreIds\": [1, 3],\n  \"actorIds\": [3]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"]
+            },
+            "description": "Creates a movie with associated genre(s) and actor(s) in a single request. Expects 201 Created."
+          }
+        },
+        {
+          "name": "Get all movies (paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            },
+            "description": "Expects 200 OK with the first 10 movies."
+          }
+        },
+        {
+          "name": "Get movie by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "1"]
+            },
+            "description": "Expects 200 OK."
+          }
+        },
+        {
+          "name": "Filter movies by genre",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies?genre=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"],
+              "query": [{ "key": "genre", "value": "1" }]
+            },
+            "description": "Expects 200 OK with all movies in the genre. A non-existent genre id returns 404."
+          }
+        },
+        {
+          "name": "Filter movies by release year",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies?year=1999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"],
+              "query": [{ "key": "year", "value": "1999" }]
+            },
+            "description": "Expects 200 OK with all movies released in 1999 (The Matrix, Fight Club in the sample data)."
+          }
+        },
+        {
+          "name": "Filter movies by actor",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies?actor=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"],
+              "query": [{ "key": "actor", "value": "1" }]
+            },
+            "description": "Expects 200 OK with all movies the actor has starred in. A non-existent actor id returns 404."
+          }
+        },
+        {
+          "name": "Search movies by title",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/search?title=MaTrIx",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "search"],
+              "query": [{ "key": "title", "value": "MaTrIx" }]
+            },
+            "description": "Case-insensitive partial match. Expects 200 OK containing 'The Matrix' despite the mixed-case query."
+          }
+        },
+        {
+          "name": "Get actors in movie",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/11/actors",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "11", "actors"]
+            },
+            "description": "Expects 200 OK with all actors starring in the movie."
+          }
+        },
+        {
+          "name": "Update movie details and actors (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"The Matrix (Remastered)\",\n  \"actorIds\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/11",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "11"]
+            },
+            "description": "Partial update: only the provided fields change. actorIds replaces the full actor list (adds and removes). Expects 200 OK with the full updated movie."
+          }
+        },
+        {
+          "name": "Delete movie (blocked by relationships)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "1"]
+            },
+            "description": "Expects 400 Bad Request because the movie has associated genres/actors."
+          }
+        },
+        {
+          "name": "Force delete movie",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/1?force=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "1"],
+              "query": [{ "key": "force", "value": "true" }]
+            },
+            "description": "Expects 204 No Content."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actors",
+      "item": [
+        {
+          "name": "Create actor",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tom Hardy\",\n  \"birthDate\": \"1977-09-15\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/actors",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors"]
+            },
+            "description": "birthDate must be ISO 8601 (YYYY-MM-DD). Expects 201 Created."
+          }
+        },
+        {
+          "name": "Get all actors (paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/actors?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            },
+            "description": "Expects 200 OK with a Page of actors."
+          }
+        },
+        {
+          "name": "Get actor by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1"]
+            },
+            "description": "Expects 200 OK."
+          }
+        },
+        {
+          "name": "Filter actors by name (case-insensitive)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/actors?name=TOM",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors"],
+              "query": [{ "key": "name", "value": "TOM" }]
+            },
+            "description": "Partial, case-insensitive match: 'TOM', 'tom' and 'Tom' all return Tom Hanks. Expects 200 OK."
+          }
+        },
+        {
+          "name": "Get movies of actor",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1", "movies"]
+            },
+            "description": "Expects 200 OK with all movies the actor has appeared in."
+          }
+        },
+        {
+          "name": "Update actor details and movies (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Keanu Charles Reeves\",\n  \"movieIds\": [11]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1"]
+            },
+            "description": "Partial update: only the provided fields change. movieIds replaces the actor's full movie list. Expects 200 OK with the updated actor."
+          }
+        },
+        {
+          "name": "Delete actor (blocked by relationships)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1"]
+            },
+            "description": "Expects 400 Bad Request with a message like \"Cannot delete actor 'Keanu Reeves' because they are associated with N movies\"."
+          }
+        },
+        {
+          "name": "Force delete actor",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/actors/1?force=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors", "1"],
+              "query": [{ "key": "force", "value": "true" }]
+            },
+            "description": "Expects 204 No Content. Removes the actor from all movies, then deletes the actor."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error scenarios",
+      "item": [
+        {
+          "name": "Get non-existent movie (404)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies/9999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies", "9999"]
+            },
+            "description": "Expects 404 Not Found with an error message."
+          }
+        },
+        {
+          "name": "Create movie with null title (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"releaseYear\": 2020,\n  \"duration\": 120\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"]
+            },
+            "description": "Expects 400 Bad Request with a field-level validation error for 'title'."
+          }
+        },
+        {
+          "name": "Create actor with invalid birthDate (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Actor\",\n  \"birthDate\": \"1990-13-32\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/actors",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "actors"]
+            },
+            "description": "Month 13, day 32 is not a valid ISO 8601 date. Expects 400 Bad Request with a clear date-format message."
+          }
+        },
+        {
+          "name": "Create movie with non-existent genre (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Ghost Movie\",\n  \"releaseYear\": 2020,\n  \"duration\": 100,\n  \"genreIds\": [9999]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/movies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"]
+            },
+            "description": "Expects 404 Not Found because genre 9999 does not exist."
+          }
+        },
+        {
+          "name": "Invalid pagination parameters (400)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/movies?page=-1&size=99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "movies"],
+              "query": [
+                { "key": "page", "value": "-1" },
+                { "key": "size", "value": "99999" }
+              ]
+            },
+            "description": "page must be >= 0 and size between 1 and 100. Expects 400 Bad Request with field-level errors."
+          }
+        }
+      ]
+    }
+  ]
+}
